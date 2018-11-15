@@ -3,31 +3,29 @@ const mockFuncInfo = [
 		id: '1',
 		name: "createUser",
 		x: 10,
-		y: 10,
+		y: 20,
 		connections: [
 			{
 				to: '2',
 				fromValue: 0,
 				toValue: 0,
-			}
+			},
+			{
+				to: '2',
+				fromValue: 1,
+				toValue: 1,
+			},
 		]
 	},
 	{
 		id: '2',
 		name: "print",
-		x: 270,
-		y: 10,
+		x: 290,
+		y: 20,
 	}
 ];
 
-const normalize = (arr, param = 'id') => arr.reduce((acc, cur) => {
-	acc[cur[param]] = cur;
-	return acc;
-}, {});
-
-const normalMockFuncInfo = normalize(mockFuncInfo);
-
-const functions = {
+const mockFunctions = {
 	print: {
 		name: 'print',
 		type: "executable",
@@ -36,7 +34,12 @@ const functions = {
 				name: 'user',
 				type: 'object',
 				on: true,
-			}
+			},
+			{
+				name: 'subjects',
+				type: 'array',
+				on: true,
+			},
 		],
 	},
 	createUser: {
@@ -65,6 +68,7 @@ const functions = {
 			{
 				name: 'subjects',
 				type: 'array',
+				on: true,
 			},
 		]
 
@@ -73,6 +77,5 @@ const functions = {
 
 export {
 	mockFuncInfo,
-	normalMockFuncInfo,
-	functions,
+	mockFunctions,
 }

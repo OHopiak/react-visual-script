@@ -2,6 +2,7 @@ import React from 'react';
 import logo from '../assets/logo.svg';
 import VSCanvas from "./VSCanvas";
 import withStyles from 'react-jss'
+import {mockFuncInfo, mockFunctions} from "./mocks";
 
 const styles = theme => ({
 	root: {
@@ -37,7 +38,8 @@ const Layout = ({classes}) => (
 			<h1 className={classes.title}>Welcome to Visual Scripting Console</h1>
 		</header>
 		<div className="body">
-			<VSCanvas height={500} width={'90%'}/>
+			<VSCanvas height={500} width={'90%'}
+					  funcInfo={mockFuncInfo} functions={mockFunctions}/>
 		</div>
 	</div>
 );

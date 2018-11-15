@@ -3,28 +3,42 @@ import cx from 'classnames'
 import withStyles from 'react-jss'
 
 const style = () => ({
-	connection: {
+	connWrapper: {
 		position: 'absolute',
-		zIndex: 1,
-		strokeWidth: 2,
+		zIndex: 2,
+	},
+	connection: {
+		strokeWidth: 4,
 	}
 });
-const Connection = ({className, x1, y1, x2, y2, type}) => (
+
+const SVGConnection = ({className, x1, y1, x2, y2, type}) => (
 	<path className={cx(className, type)} d={`M ${x1} ${y1} L ${x2} ${y2}`}/>
 );
 
-const ConnectionManager = ({classes, height, width, blocks}) => {
-	console.log(Object.values(blocks).map(block => {
-		if (block.connections)
-			return block.connections.map(conn => ({...conn, from: block.id}));
-		else
-			return null
-	}).flat().filter(x => x));
+const SVGConnectionManager = ({classes, height, width, data}) => {
 	return (
 		<svg height={height} width={width}>
-			<Connection className={classes.connection} x1={245} y1={80} x2={285} y2={80} type='object'/>
+			{data && data.map(item =>
+				<SVGConnection className={classes.connection}
+							{...item} key={JSON.stringify(item)}/>)
+			}
 		</svg>
 	);
 };
 
-export default withStyles(style)(ConnectionManager);
+const DivConnection = ({classes, x1, y1, x2, y2, type}) => (
+	<svg height={y2-y1+2} width={x2-x1+2} className={classes.connWrapper} style={{top: y1, left: x1}}>
+		<path className={cx(classes.connection, type)} d={`M ${0} ${0} L ${x2-x1} ${y2-y1}`}/>
+	</svg>
+		);
+const DivConnectionManager = ({classes, height, width, data}) => (
+	<div style={{height, width}}>
+		{data && data.map(item =>
+			<DivConnection classes={classes}
+						{...item} key={JSON.stringify(item)}/>)
+		}
+	</div>
+);
+
+export default withStyles(style)(DivConnectionManager);

@@ -13,7 +13,7 @@ const styles = theme => ({
 		width: 250,
 		display: 'flex',
 		flexFlow: 'column',
-		zIndex: -1,
+		zIndex: 1,
 		position: 'absolute',
 	},
 	header: {
@@ -46,30 +46,38 @@ const styles = theme => ({
 		alignItems: 'flex-end',
 	}
 });
-const FunctionBlock = ({classes, className = 'func-block', x, y, name, type, parameters, returnValues}) => (
-	<div className={cx(classes.root)} style={{top: y, left: x}}>
-		<div className={cx(classes.header, className + '-header')}>(f) {name}</div>
-		<div className={cx(classes.body, className + '-body')}>
-			<div className={cx(classes.column, classes.left)}>
-				{type === "executable" && <Endpoint on type='execution'/>}
-				{parameters && parameters.map(({name, type, on}) => <Parameter key={name} {...{name, type, on}}/>)}
+
+class FunctionBlock extends React.Component {
+	static propTypes = {
+		classes: PropTypes.object.isRequired,
+		name: PropTypes.string.isRequired,
+		type: PropTypes.oneOf(['getter', 'transform', 'executable']).isRequired,
+		x: PropTypes.number.isRequired,
+		y: PropTypes.number.isRequired,
+		parameters: PropTypes.arrayOf(PropTypes.object),
+		returnValues: PropTypes.arrayOf(PropTypes.object)
+	};
+
+	render() {
+		const {classes, x, y, name, type, parameters, sidesRef, returnValues} = this.props;
+		return (
+			<div className={classes.root} style={{top: y, left: x}}>
+				<div className={classes.header}>(f) {name}</div>
+				<div className={classes.body}>
+					<div className={cx(classes.column, classes.left)} ref={sidesRef.left}>
+						{type === "executable" && <Endpoint on type='execution'/>}
+						{parameters && parameters.map(({name, type, on}) =>
+							<Parameter key={name} {...{name, type, on}}/>)}
+					</div>
+					<div className={cx(classes.column, classes.right)} ref={sidesRef.right}>
+						{type === "executable" && <Endpoint type='execution'/>}
+						{returnValues && returnValues.map(({name, type, on}) =>
+							<Parameter key={name} {...{name, type, on}} returnValue/>)}
+					</div>
+				</div>
 			</div>
-			<div className={cx(classes.column, classes.right)}>
-				{type === "executable" && <Endpoint type='execution'/>}
-				{returnValues && returnValues.map(({name, type, on}) => <Parameter key={name} {...{name, type, on}}
-																				   returnValue/>)}
-			</div>
-		</div>
-	</div>
-);
-FunctionBlock.propTypes = {
-	name: PropTypes.string.isRequired,
-	type: PropTypes.oneOf(['getter', 'transform', 'executable']),
-	x: PropTypes.number.isRequired,
-	y: PropTypes.number.isRequired,
-	parameters: PropTypes.arrayOf(PropTypes.object),
-	returnValues: PropTypes.arrayOf(PropTypes.object)
-};
-FunctionBlock.defaultProps = {};
+		)
+	}
+}
 
 export default withStyles(styles)(FunctionBlock);

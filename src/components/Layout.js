@@ -1,8 +1,7 @@
 import React from 'react';
 import logo from '../assets/logo.svg';
-import VSCanvas from "./VSCanvas";
 import withStyles from 'react-jss'
-import {mockFuncInfo, mockFunctions} from "./mocks";
+import ConnectedVSCanvas from "./ConnectedVSCanvas";
 
 const styles = theme => ({
 	root: {
@@ -22,12 +21,13 @@ const styles = theme => ({
 		to: {transform: 'rotate(360deg)'}
 	},
 	logo: {
-		animation: '$spin infinite 20s linear',
+		animation: 'spin infinite 20s linear',
 		height: 80,
 	},
 	body: {
 		display: 'flex',
 		justifyContent: 'center',
+		height: 500,
 	},
 });
 
@@ -37,10 +37,10 @@ const Layout = ({classes}) => (
 			<img src={logo} className={classes.logo} alt="logo"/>
 			<h1 className={classes.title}>Welcome to Visual Scripting Console</h1>
 		</header>
-		<div className="body">
-			<VSCanvas height={500} width={'90%'}
-					  funcInfo={mockFuncInfo} functions={mockFunctions}/>
+		<div className={classes.body}>
+			<ConnectedVSCanvas/>
 		</div>
 	</div>
 );
+
 export default withStyles(styles)(Layout);

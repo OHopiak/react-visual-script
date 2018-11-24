@@ -1,6 +1,6 @@
 import shadows from './shadows'
 
-const types = {
+const defaultTypes = {
 	int: 'dodgerblue',
 	float: 'green',
 	string: 'pink',
@@ -9,11 +9,21 @@ const types = {
 	execution: 'white',
 };
 
-const createTheme = theme => {
-	const palette = {...theme.palette, types: {...types, ...theme.palette.types}};
-	const result = {...theme, palette, shadows};
-	console.log(result);
-	return result;
+const defaultConnections = {
+	weight: 2,
+	circleRadius: 6,
+	circleMargin: 2,
+};
+const createTheme = (theme = {}) => {
+	const types = {...defaultTypes, ...(theme.palette && theme.palette.types)};
+	const palette = {...theme.palette, types};
+	const connections = {...defaultConnections, ...theme.connections};
+	return {
+		...theme,
+		palette,
+		shadows,
+		connections
+	};
 };
 
 export default createTheme;

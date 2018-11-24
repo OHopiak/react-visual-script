@@ -8,7 +8,12 @@
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
     "react-jss": "^8.6.1",
-    "react-scripts": "^2.0.0"
+    "react-redux": "^5.1.1",
+    "react-scripts": "^2.0.0",
+    "redux": "^4.0.1",
+    "redux-logger": "^3.0.6",
+		"jss": "latest",
+    "jss-preset-default": "latest"
   },
   "devDependencies": {
     "node-sass": "^4.9.3"

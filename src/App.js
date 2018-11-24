@@ -1,23 +1,28 @@
 import React, {Component} from 'react';
 import {ThemeProvider} from 'react-jss'
+import {Provider} from 'react-redux';
+import jss from 'jss'
+import preset from 'jss-preset-default'
 import Layout from "./components/Layout";
 import createTheme from "./styles/createTheme";
 import CSSBaseline from "./styles/CSSBaseline";
+import store from "./data/store";
 
-const theme = createTheme({
-	palette: {
-	}
-});
+jss.setup(preset());
+
+const theme = createTheme();
 
 class App extends Component {
 	render() {
 		return (
-			<ThemeProvider theme={theme}>
-				<React.Fragment>
-					<CSSBaseline/>
-					<Layout/>
-				</React.Fragment>
-			</ThemeProvider>
+			<Provider store={store}>
+				<ThemeProvider theme={theme}>
+					<React.Fragment>
+						<CSSBaseline/>
+						<Layout/>
+					</React.Fragment>
+				</ThemeProvider>
+			</Provider>
 		);
 	}
 }

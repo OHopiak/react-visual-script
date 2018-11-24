@@ -3,16 +3,23 @@ import PropTypes from "prop-types";
 import cx from 'classnames'
 import withStyles from 'react-jss'
 
-const styles = () => ({
+/*
+strokeWidth: ({on}) => on ? 1 : 0,
+fillOpacity: ({on}) => on ? 1 : 2,
+*/
+
+const styles = theme => ({
 	endpoint: {
-		width: 16,
-		height: 16,
+		width: (theme.connections.circleRadius + theme.connections.weight)*2,
+		height: (theme.connections.circleRadius + theme.connections.weight)*2,
 	},
 	on: {
+		r: theme.connections.circleRadius,
 		strokeWidth: 1,
 		fillOpacity: 1,
 	},
 	off: {
+		r: theme.connections.circleRadius,
 		fillOpacity: 0,
 		strokeWidth: 2,
 	},
@@ -20,7 +27,7 @@ const styles = () => ({
 		margin: '3px 2px 7px'
 	},
 	value: {
-		margin: 2,
+		margin: theme.connections.circleMargin,
 	},
 });
 

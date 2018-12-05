@@ -1,14 +1,26 @@
+import {normalize} from "../utils";
 
 class VSNode {
-	getInstance = () => ({})
+	static lastId = 0;
+
+	constructor({name, nodeType}) {
+		this.name = name;
+		this.nodeType = nodeType;
+	}
+
+	getBaseInstance = () => {
+		VSNode.lastId += 1;
+		return {
+			id: VSNode.lastId,
+			name: this.name,
+			nodeType: this.nodeType,
+		}
+	};
 }
 
 class VSFunction extends VSNode {
-	static lastId = 0;
-
 	constructor({name, type, parameters, returnValues, func}) {
-		super();
-		this.name = name;
+		super({name, nodeType: 'Function'});
 		this.type = type;
 		this.parameters = parameters;
 		this.returnValues = returnValues;
@@ -16,8 +28,18 @@ class VSFunction extends VSNode {
 	}
 
 	getInstance = (config) => {
-		VSFunction.lastId += 1;
-		return {id: VSFunction.lastId, name: this.name, ...config}
+		return {...this.getBaseInstance(), ...config};
+	};
+}
+
+class VSEvent extends VSNode {
+	constructor({name, returnValues}) {
+		super({name, nodeType: 'Event'});
+		this.returnValues = returnValues;
+	}
+
+	getInstance = (config) => {
+		return {...this.getBaseInstance(), ...config}
 	};
 }
 
@@ -39,8 +61,20 @@ const execFunc = (outputs, id, normalInfo, functions) => {
 		execFunc(outputs, node.exec, normalInfo, functions);
 };
 
+const processStart = (nodeInfo, functions) => {
+	const normalInfo = normalize(nodeInfo);
+	const outputs = {};
+	const event = nodeInfo.find(el => el.name === 'process start');
+	const startExec = event.exec;
+	if (startExec)
+		execFunc(outputs, startExec, normalInfo, functions);
+	console.log(outputs);
+};
+
 export {
 	VSNode,
 	VSFunction,
+	VSEvent,
 	execFunc,
+	processStart,
 }

@@ -5,7 +5,7 @@ import withStyles from "react-jss";
 const style = theme => ({
 	root: {
 		position: 'absolute',
-		zIndex: 2,
+		zIndex: 1,
 		top: ({y1, y2}) => Math.min(y1, y2),
 		left: ({x1, x2}) => Math.min(x1, x2),
 		height: ({y1, y2}) => Math.abs(y2 - y1) + theme.connections.weight,

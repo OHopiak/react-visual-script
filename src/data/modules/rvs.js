@@ -1,4 +1,4 @@
-import {mockFuncInfo, mockFunctions} from "../../components/mocks";
+import {mockFunctions, mockNodeInfo} from "../../components/mocks";
 
 // Types
 const RVS_PREFIX = 'RVS:';
@@ -23,7 +23,7 @@ const editNode = (data) => ({
 // Reducer
 const initState = {
 	functions: mockFunctions,
-	functionInfo: mockFuncInfo,
+	functionInfo: mockNodeInfo,
 	selected: 0,
 };
 

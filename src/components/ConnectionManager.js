@@ -1,6 +1,7 @@
 import React from "react";
 import withStyles from 'react-jss'
 import cx from 'classnames'
+import PropTypes from 'prop-types'
 import Connection from "./Connection";
 
 const style = () => ({
@@ -10,12 +11,17 @@ const style = () => ({
 	}
 });
 
-const ConnectionManager = ({classes, className, data}) => (
+const ConnectionManager = ({classes, className, connections}) => (
 	<div className={cx(classes.root, className)}>
-		{data && data.map(item =>
+		{connections && connections.map(item =>
 			<Connection {...item} key={JSON.stringify(item)}/>)
 		}
 	</div>
 );
+ConnectionManager.propTypes = {
+	classes: PropTypes.object.isRequired,
+	className: PropTypes.string,
+	connections: PropTypes.array,
+};
 
 export default withStyles(style)(ConnectionManager);

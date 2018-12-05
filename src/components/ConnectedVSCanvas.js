@@ -1,32 +1,39 @@
 import React from "react";
 import VSCanvas from "./VSCanvas";
-import {mockFuncInfo, mockFunctions} from "./mocks";
+import {mockFunctions, mockNodeInfo} from "./mocks";
 
 /*
 const withStore = connect(state => ({
 	functions: state.rvs.functions,
-	funcInfo: state.rvs.functionInfo,
+	nodeInfo: state.rvs.functionInfo,
 	selected: state.rvs.selected,
 }), dispatch => ({
 	editNode: data => dispatch(editNode(data))
 }));
 */
 
-class ConnectedVSCanvas extends React.Component {
+class ConnectedVSCanvas extends React.PureComponent {
 	state = {
 		functions: {...mockFunctions},
-		funcInfo: [...mockFuncInfo],
-		selected: 2,
+		nodeInfo: [...mockNodeInfo],
+		selected: -1,
 	};
 
 	editNode = (data) => {
-		const {funcInfo} = this.state;
-		const newInfo = [...funcInfo];
+		const {nodeInfo} = this.state;
+		const newInfo = [...nodeInfo];
 		const i = newInfo.findIndex(el => (+el.id) === (+data.id));
 		if (i >= 0) {
 			newInfo[i] = data;
+		} else {
+			newInfo.push(data);
 		}
-		this.setState(() =>({funcInfo: newInfo}));
+		this.setState(() => ({nodeInfo: newInfo}));
+	};
+
+	deleteNode = id => {
+		const {nodeInfo} = this.state;
+		this.setState(() => ({nodeInfo: nodeInfo.filter(node => +node.id !== +id)}));
 	};
 
 	selectNode = i => () => {
@@ -34,7 +41,10 @@ class ConnectedVSCanvas extends React.Component {
 	};
 
 	render(){
-		return <VSCanvas {...this.props} {...this.state} editNode={this.editNode} selectNode={this.selectNode}/>
+		return <VSCanvas {...this.props} {...this.state}
+						 editNode={this.editNode}
+						 deleteNode={this.deleteNode}
+						 selectNode={this.selectNode}/>
 	}
 }
 

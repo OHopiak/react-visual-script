@@ -3,25 +3,18 @@ import PropTypes from "prop-types";
 import cx from 'classnames'
 import withStyles from 'react-jss'
 
-/*
-strokeWidth: ({on}) => on ? 1 : 0,
-fillOpacity: ({on}) => on ? 1 : 2,
-*/
-
 const styles = theme => ({
 	endpoint: {
 		width: (theme.connections.circleRadius + theme.connections.weight)*2,
 		height: (theme.connections.circleRadius + theme.connections.weight)*2,
-	},
-	on: {
-		r: theme.connections.circleRadius,
-		strokeWidth: 1,
-		fillOpacity: 1,
-	},
-	off: {
 		r: theme.connections.circleRadius,
 		fillOpacity: 0,
 		strokeWidth: 2,
+
+	},
+	on: {
+		strokeWidth: 1,
+		fillOpacity: 1,
 	},
 	exec: {
 		margin: '3px 2px 7px'
@@ -38,8 +31,8 @@ const Figure = ({type, className}) => type === 'execution' ? (
 );
 
 const Endpoint = ({theme, classes, on, type}) => (
-	<svg className={cx(classes.endpoint, 'endpoint', (type === 'execution' ? classes.exec : classes.value), {on})}>
-		<Figure type={type} className={cx(type, (on ? classes.on : classes.off))}/>
+	<svg className={cx(classes.endpoint, (type === 'execution' ? classes.exec : classes.value), {on})}>
+		<Figure type={type} className={cx(type, on && classes.on)}/>
 	</svg>
 );
 Endpoint.propTypes = {

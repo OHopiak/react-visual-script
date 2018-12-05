@@ -1,9 +1,9 @@
 import {normalize} from "../utils";
-import {VSFunction} from "../logic/functions";
+import {VSEvent, VSFunction} from "../logic/functions";
 
 const mockFunctions = normalize([
 	new VSFunction({
-		name: 'consoleLog',
+		name: 'console.log',
 		type: "executable",
 		parameters: [
 			{
@@ -17,7 +17,7 @@ const mockFunctions = normalize([
 		},
 	}),
 	new VSFunction({
-		name: 'createUser',
+		name: 'user.create',
 		type: "executable",
 		parameters: [
 			{
@@ -89,18 +89,24 @@ const mockFunctions = normalize([
 	}),
 ], 'name');
 
-const mockFuncInfo = [
+const mockEvents = normalize([
+	new VSEvent({
+		name: 'process start',
+	}),
+], 'name');
+
+const mockNodeInfo = [
 	mockFunctions['generateUsername'].getInstance({
-		x: 10,
-		y: 150,
+		x: 610,
+		y: 550,
 	}),
 	mockFunctions['generateFullName'].getInstance({
-		x: 10,
-		y: 220,
+		x: 610,
+		y: 620,
 	}),
-	mockFunctions['createUser'].getInstance({
-		x: 220,
-		y: 40,
+	mockFunctions['user.create'].getInstance({
+		x: 820,
+		y: 440,
 		connections: [
 			{
 				from: 1,
@@ -115,22 +121,20 @@ const mockFuncInfo = [
 		],
 		exec: 4,
 	}),
-	mockFunctions['consoleLog'].getInstance({
-		x: 630,
-		y: 40,
+	mockFunctions['console.log'].getInstance({
+		x: 1230,
+		y: 440,
 		connections: [
 			{
-				// from: 1,
 				from: 5,
 				fromValue: 0,
 				toValue: 0,
 			},
 		],
-		exec: 6,
 	}),
 	mockFunctions['object.toString'].getInstance({
-		x: 430,
-		y: 140,
+		x: 1030,
+		y: 540,
 		connections: [
 			{
 				from: 3,
@@ -139,20 +143,15 @@ const mockFuncInfo = [
 			},
 		],
 	}),
-	mockFunctions['console.log'].getInstance({
-		x: 430,
-		y: 240,
-		connections: [
-			{
-				from: 1,
-				fromValue: 0,
-				toValue: 0,
-			},
-		],
+	mockEvents['process start'].getInstance({
+		x: 610,
+		y: 440,
+		exec: 3,
 	}),
 ];
 
 export {
-	mockFuncInfo,
+	mockNodeInfo,
 	mockFunctions,
+	mockEvents,
 }

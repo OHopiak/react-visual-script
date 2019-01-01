@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types'
 import withStyles from 'react-jss'
+import MenuItem from "./MenuItem";
+import MenuList from "./MenuList";
 
 const styles = () => ({
 	root: {
@@ -22,26 +24,21 @@ const styles = () => ({
 		},
 	},
 	title: {
+		fontSize: '1.2em',
 		paddingTop: 5,
 		borderRadius: '10px 10px 0 0',
-		backgroundColor: 'rgba(0, 0, 0, 0.29)',
+		backgroundColor: 'rgba(0, 0, 0, 0.45)',
 		width: '100%',
-		// textAlign: 'center'
-	},
-	item: {
-		fontSize: '0.9em',
-		transition: 'background-color 0.4s ease',
-		'&:hover': {
-			backgroundColor: 'rgba(0, 0, 0, 0.29)',
-		},
 	},
 });
 
 const ContextMenu = ({classes, title, options, handleChoice}) => (
 	<div className={classes.root}>
 		<div className={classes.title}>{title}</div>
-		{options && options.map((option, i) => (
-			<div className={classes.item} key={i} onClick={handleChoice(option)}>{option.title}</div>
+		{options && options.map((option, i) => option.children ? (
+			<MenuList key={i} handleChoice={handleChoice} option={option}/>
+		) : (
+			<MenuItem key={i} handleChoice={handleChoice} option={option}/>
 		))}
 	</div>
 );

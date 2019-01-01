@@ -20,9 +20,9 @@ const styles = () => ({
 		flexDirection: 'row-reverse',
 	}
 });
-const Parameter = ({classes, name, type, on, returnValue}) => (
-	<div className={cx(classes.root, {[classes.return]: returnValue})}>
-		<Endpoint type={type} on={on}/><span>{name}</span>
+const Parameter = ({classes, name, type, on, returnValue, hideName, onContextMenuCapture}) => (
+	<div className={cx(classes.root, returnValue && classes.return)} onContextMenuCapture={onContextMenuCapture}>
+		<Endpoint type={type} on={on}/>{!hideName && <span>{name}</span>}
 	</div>
 );
 Parameter.propTypes = {
@@ -31,10 +31,9 @@ Parameter.propTypes = {
 	// classes: PropTypes.object,
 	on: PropTypes.bool,
 	type: PropTypes.oneOf(['string', 'int', 'float', 'object', 'array']).isRequired,
+	hideName: PropTypes.bool,
+	onContextMenuCapture: PropTypes.func,
 };
-Parameter.defaultProps = {
-	returnValue: false,
-	on: false
-};
+Parameter.defaultProps = {};
 
 export default withStyles(styles)(Parameter);

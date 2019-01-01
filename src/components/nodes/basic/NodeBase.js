@@ -13,7 +13,9 @@ const styles = theme => ({
 		flexFlow: 'column',
 		zIndex: 1,
 		position: 'absolute',
-		transition: 'top 0.15s ease, left 0.15s ease'
+		transition: 'top 0.15s ease, left 0.15s ease',
+		top: ({y}) => y,
+		left: ({x}) => x
 	},
 	selected: {
 		border: '3px solid white',
@@ -22,8 +24,7 @@ const styles = theme => ({
 
 const NodeBase = ({classes, className, x, y, selected, onClick, onContextMenuCapture, children}) => (
 	<div className={cx(classes.root, className, selected && classes.selected)}
-		 style={{top: y, left: x}}
-		 onClick={onClick}
+		 onClickCapture={onClick}
 		 onContextMenuCapture={onContextMenuCapture}>
 		{children}
 	</div>
@@ -36,7 +37,11 @@ NodeBase.propTypes = {
 	selected: PropTypes.bool,
 	onClick: PropTypes.func,
 	onContextMenuCapture: PropTypes.func,
-	children: PropTypes.arrayOf(PropTypes.node)
+	children: PropTypes.oneOfType([
+		PropTypes.node,
+		PropTypes.object,
+		PropTypes.arrayOf(PropTypes.node)
+	])
 };
 NodeBase.defaultProps = {
 	x: 0,

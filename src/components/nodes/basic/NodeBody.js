@@ -27,7 +27,9 @@ NodeBody.propTypes = {
 	className: PropTypes.string,
 	onClick: PropTypes.func,
 	children: PropTypes.oneOfType([
-		PropTypes.node, PropTypes.arrayOf(PropTypes.node)
+		PropTypes.node,
+		PropTypes.object,
+		PropTypes.arrayOf(PropTypes.node)
 	])
 };
 NodeBody.defaultProps = {

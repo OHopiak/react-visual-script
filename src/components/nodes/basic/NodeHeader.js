@@ -17,14 +17,15 @@ const styles = () => ({
 	},
 });
 
-const NodeHeader = ({classes, className, prefix, name}) => (
-	<div className={cx(classes.root, className)}><span>{prefix} {name}</span></div>
+const NodeHeader = ({classes, className, prefix, name, id}) => (
+	<div className={cx(classes.root, className)}><span>{prefix} [{id}] {name}</span></div>
 );
 NodeHeader.propTypes = {
 	classes: PropTypes.object.isRequired,
 	className: PropTypes.string,
 	prefix: PropTypes.string,
 	name: PropTypes.string,
+	id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 NodeHeader.defaultProps = {};
 

@@ -23,4 +23,19 @@ const countActiveEndpoints = (nodeInfo) => {
 	return active;
 };
 
+const getParamType = (parameters, executable) => i => {
+	let result = null;
+	if (executable) {
+		if (i === 0)
+			result = 'execution';
+		else if (parameters && i <= parameters.length)
+			result = parameters[i - 1].type;
+	} else if (parameters && i < parameters.length)
+		result = parameters[i].type;
+	return result;
+};
+
 export default countActiveEndpoints
+export {
+	getParamType,
+}

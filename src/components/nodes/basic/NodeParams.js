@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types'
 import withStyles from 'react-jss'
+import cx from 'classnames'
 import NodeEndpointList from "./NodeEndpointList";
 
 const styles = () => ({
@@ -9,7 +10,7 @@ const styles = () => ({
 	},
 });
 
-class NodeParams extends React.Component {
+class NodeParams extends React.PureComponent {
 	static propTypes = {
 		classes: PropTypes.object.isRequired,
 		className: PropTypes.string,
@@ -17,16 +18,24 @@ class NodeParams extends React.Component {
 		parameters: PropTypes.arrayOf(PropTypes.object),
 		active: PropTypes.object,
 		columnRef: PropTypes.object,
+		hideNames: PropTypes.bool,
+		register: PropTypes.func.isRequired,
 	};
 
-
 	render() {
-		const {classes, executable, parameters, active, columnRef} = this.props;
+		const {
+			classes, className, executable, hideNames,
+			parameters, active, register, x, handleEndpointContext,
+		} = this.props;
 		return (
-			<NodeEndpointList className={classes.root}
-							  {...{columnRef, executable, parameters}}
+			<NodeEndpointList className={cx(classes.root, className)}
+							  {...{executable, parameters, hideNames}}
 							  activeExec={active.exec && active.exec.from}
 							  activeParams={active.params}
+							  x={x}
+							  register={register('param')}
+							  handleEndpointContext={handleEndpointContext('param')}
+
 			/>
 		)
 	}

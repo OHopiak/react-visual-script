@@ -1,4 +1,4 @@
-import {mockFunctions, mockNodeInfo} from "../../components/mocks";
+import {mockFunctions, mockNodeInfo} from "../../logic/mocks/mocks";
 
 // Types
 const RVS_PREFIX = 'RVS:';

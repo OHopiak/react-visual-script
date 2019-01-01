@@ -4,11 +4,12 @@ import withStyles from 'react-jss'
 import cx from 'classnames'
 import ConnectionManager from "./ConnectionManager";
 import canvas_bg from '../assets/canvas_bg.svg'
-import {processStart} from "../logic/functions";
+import processStart from "../logic/exec";
 import NodeBlock from "./nodes/NodeBlock";
-import ContextMenu from "./ContextMenu";
 import NodeRegister from "../logic/NodeRegister";
 import countActiveEndpoints from "../logic/endpoints";
+import {EVENT, FUNCTION, OPERATION} from "../logic/nodes/types";
+import ContextHandler from "./ContextHandler";
 
 const delta = 5;
 const canvasWidth = 3000;
@@ -42,6 +43,8 @@ class VSCanvas extends React.PureComponent {
 	static propTypes = {
 		nodeInfo: PropTypes.array.isRequired,
 		functions: PropTypes.object.isRequired,
+		events: PropTypes.object.isRequired,
+		operations: PropTypes.object.isRequired,
 		className: PropTypes.string,
 		selected: PropTypes.number.isRequired,
 		editNode: PropTypes.func.isRequired,
@@ -54,18 +57,35 @@ class VSCanvas extends React.PureComponent {
 			top: -400,
 			left: -600,
 		},
+		funcRegister: new NodeRegister(),
 		showContext: false,
 		contextPos: {x: 0, y: 0},
-		funcRegister: new NodeRegister(),
 		contextOptions: [],
 	};
 
 	wrapperRef = React.createRef();
 
-	register = funcData => {
+	registerNode = funcData => {
 		if (funcData.id) this.setState(state => ({
 			funcRegister: state.funcRegister.withNode(funcData)
 		}));
+	};
+
+	register = (id, name) => type => (getLocation, getType) => {
+		if (type === 'param')
+			this.registerNode({
+				id,
+				name,
+				getParamLocation: getLocation,
+				getParamType: getType,
+			});
+		else if (type === 'return')
+			this.registerNode({
+				id,
+				name,
+				getReturnLocation: getLocation,
+				getReturnType: getType,
+			});
 	};
 
 	componentDidMount() {
@@ -76,9 +96,19 @@ class VSCanvas extends React.PureComponent {
 		document.removeEventListener("keydown", this.handleKey)
 	}
 
+	getSource = type => {
+		const {functions, operations, events} = this.props;
+		const blocks = {
+			[FUNCTION]: functions,
+			[EVENT]: events,
+			[OPERATION]: operations,
+		};
+		return blocks[type];
+	};
+
 	handleKey = e => {
 		if (!this.wrapperRef.current) return;
-		const {nodeInfo, functions, selected, editNode} = this.props;
+		const {nodeInfo, functions, operations, selected, editNode} = this.props;
 		const {canvasPos} = this.state;
 		const node = {...nodeInfo[selected]};
 		const wrapperWidth = this.wrapperRef.current.offsetWidth;
@@ -109,8 +139,7 @@ class VSCanvas extends React.PureComponent {
 					editNode(node);
 				} else if (newPos.left <= -delta) {
 					newPos.left += delta;
-					this.setState(state => ({canvasLeft: state.canvasLeft + delta}));
-					this.setState(() => ({canvasPos: newPos}));
+					this.setState(state => ({canvasLeft: state.canvasLeft + delta, canvasPos: newPos}));
 				}
 				break;
 			case DOWN:
@@ -123,7 +152,9 @@ class VSCanvas extends React.PureComponent {
 				}
 				break;
 			case ENTER:
-				processStart(nodeInfo, functions);
+				processStart(nodeInfo, functions, operations)
+					.then(o => console.log(o))
+					.catch(err => console.error(err));
 				break;
 			default:
 				// console.log(e.key);
@@ -131,116 +162,62 @@ class VSCanvas extends React.PureComponent {
 		}
 	};
 
-	handleLeftClick = () => {
+	handleLeftClick = ({hideContext}) => e => {
 		this.props.selectNode(-1)();
-		this.setState(() => ({
-			showContext: false,
-		}))
+		hideContext();
 	};
 
-	handleBackgroundContext = e => {
-		e.preventDefault();
-		const wrapper = this.wrapperRef.current;
-		const {functions} = this.props;
-		const pos = {
-			x: e.pageX - wrapper.offsetLeft,
-			y: e.pageY - wrapper.offsetTop,
-		};
-		this.setState(() => ({
-			showContext: true,
-			contextPos: pos,
-			contextType: 'background',
-			contextOptions: Object.values(functions).map(func => ({
-				type: 'item',
-				title: func.name,
-			}))
-		}))
-	};
-
-	handleNodeContext = node => e => {
-		e.preventDefault();
-		const wrapper = this.wrapperRef.current;
-		const pos = {
-			x: e.pageX - wrapper.offsetLeft,
-			y: e.pageY - wrapper.offsetTop,
-		};
-		this.setState(() => ({
-			showContext: true,
-			contextPos: pos,
-			contextType: 'node',
-			contextOptions: [
-				{
-					type: 'item',
-					title: 'Delete',
-					data: node,
-				}
-			]
-		}))
-	};
-
-	handleOptionChoice = option => () => {
-		const {deleteNode} = this.props;
-		const {contextType, funcRegister} = this.state;
-
-		switch (contextType) {
-			case 'background':
-				if (option.title) {
-					const {editNode, functions} = this.props;
-					const {canvasPos, contextPos} = this.state;
-					editNode(functions[option.title].getInstance({
-							x: contextPos.x - canvasPos.left,
-							y: contextPos.y - canvasPos.top,
-						}),
-					)
-				}
-				break;
-			case 'node':
-				if (option.data && option.data.id) {
-					delete funcRegister.data[option.data.id];
-					deleteNode(option.data.id);
-				}
-				break;
-			default:
-				console.log(option);
-		}
+	selectNode = (i) => e => {
+		e.stopPropagation();
+		const {selectNode} = this.props;
+		selectNode(i)();
 	};
 
 	render() {
 		const {
-			classes, nodeInfo, functions,
-			className, selectNode, selected
+			classes, nodeInfo, functions, events, operations,
+			className, selected, deleteNode, editNode,
 		} = this.props;
 		const {
-			canvasPos, funcRegister, showContext,
-			contextPos, contextOptions
+			canvasPos, funcRegister
 		} = this.state;
 		const active = countActiveEndpoints(nodeInfo);
 		const connections = funcRegister.getConnections(nodeInfo, functions);
 		console.count("rendered");
 		return (
-			<div className={cx(classes.root, className)}
-				 ref={this.wrapperRef}
-				 onContextMenuCapture={this.handleBackgroundContext}
-				 onClickCapture={this.handleLeftClick}>
-				<div className={cx(classes.canvas)} style={canvasPos}>
-					{nodeInfo.map((node, i) =>
-						<NodeBlock {...functions[node.name]}
-								   {...node}
-								   key={node.id}
-								   onContextMenuCapture={this.handleNodeContext(node)}
-								   onClick={selectNode(i)}
-								   active={active[node.id]}
-								   register={this.register}
-								   selected={selected === i}
-						/>
-					)}
-					<ConnectionManager connections={connections}/>
-				</div>
-				<ContextMenu show={showContext}
-							 {...contextPos}
-							 options={contextOptions}
-							 handleChoice={this.handleOptionChoice}/>
-			</div>
+			<ContextHandler canvasPos={canvasPos}
+							deleteNode={deleteNode}
+							editNode={editNode}
+							funcRegister={funcRegister}
+							getSource={this.getSource}
+							nodeInfo={nodeInfo}
+							wrapper={this.wrapperRef}>
+				{({handleBackgroundContext, handleNodeContext, handleEndpointContext, hideContext, MenuNode}) =>
+					<div className={cx(classes.root, className)}
+						 ref={this.wrapperRef}
+						 onContextMenuCapture={handleBackgroundContext}
+						 onClick={this.handleLeftClick({hideContext})}>
+						<div className={cx(classes.canvas)} style={canvasPos}>
+							{nodeInfo.map((node, i) =>
+								<NodeBlock functions={functions}
+										   events={events}
+										   operations={operations}
+										   {...node}
+										   key={node.id}
+										   onContextMenuCapture={handleNodeContext(node)}
+										   onClick={this.selectNode(i)}
+										   active={active[node.id]}
+										   register={this.register(node.id, node.name)}
+										   selected={selected === i}
+										   handleEndpointContext={handleEndpointContext(node)}
+								/>
+							)}
+							<ConnectionManager connections={connections}/>
+						</div>
+						{MenuNode}
+					</div>
+				}
+			</ContextHandler>
 		);
 	}
 }

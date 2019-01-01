@@ -10,8 +10,8 @@ const styles = () => ({
 		flexDirection: 'row',
 	},
 });
-const Execution = ({classes, on}) => (
-	<div className={classes.root}>
+const Execution = ({classes, on, onContextMenuCapture}) => (
+	<div className={classes.root} onContextMenuCapture={onContextMenuCapture}>
 		<Endpoint type={'execution'} on={on}/>
 	</div>
 );

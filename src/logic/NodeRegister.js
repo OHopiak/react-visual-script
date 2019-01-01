@@ -1,4 +1,12 @@
 import {normalize} from "../utils";
+import {EVENT, FUNCTION, OPERATION} from "./nodes/types";
+
+const offsets = {
+	[FUNCTION]: ({functions, func}) => functions[func.name].type === 'executable' ? 1 : 0,
+	[EVENT]: () => 1,
+	[OPERATION]: () => 0,
+};
+
 
 class NodeRegister {
 	constructor(defaultRegister = {}) {
@@ -11,8 +19,8 @@ class NodeRegister {
 			const data = !func.connections ? [] :
 				func.connections.map(({from, fromValue, toValue}) => {
 					const funcFrom = normalNodeInfo[from];
-					const idFrom = fromValue + (functions[funcFrom.name].type === 'executable' ? 1 : 0);
-					const idTo = toValue + (functions[func.name].type === 'executable' ? 1 : 0);
+					const idFrom = fromValue + offsets[funcFrom.nodeType]({functions, func: funcFrom});
+					const idTo = toValue + offsets[func.nodeType]({functions, func});
 					return this.getConnectionData(funcFrom.id, func.id, idFrom, idTo);
 				});
 			if (func.exec)
@@ -36,7 +44,7 @@ class NodeRegister {
 
 	withNode = node => new NodeRegister({
 		...this.data,
-		[node.id]: node,
+		[node.id]: {...this.data[node.id], ...node},
 	})
 }
 

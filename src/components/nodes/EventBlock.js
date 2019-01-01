@@ -15,7 +15,7 @@ const styles = () => ({
 	},
 });
 
-class EventBlock extends React.Component {
+class EventBlock extends React.PureComponent {
 	static propTypes = {
 		id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
 		classes: PropTypes.object.isRequired,
@@ -34,59 +34,18 @@ class EventBlock extends React.Component {
 		selected: PropTypes.bool,
 		onContextMenuCapture: PropTypes.func,
 	};
-	right = React.createRef();
-
-	getReturnLocation = i => {
-		const {x} = this.props;
-		if (!this.right.current) return null;
-
-		const node = this.right.current.children[i];
-		const offset = this.getNodeOffset();
-		return {
-			x: node.offsetWidth - offset + node.offsetLeft + x,
-			y: node.offsetTop + node.offsetParent.offsetTop + offset,
-			type: this.getReturnType(i),
-		}
-	};
-
-	getReturnType = i => {
-		const {returnValues} = this.props;
-		let result = null;
-		if (i === 0)
-			result = 'execution';
-		else if (returnValues && i <= returnValues.length)
-			result = returnValues[i - 1].type;
-		return result;
-	};
-
-	getNodeOffset = () => {
-		const {theme} = this.props;
-		return theme.connections.circleRadius + theme.connections.circleMargin + theme.connections.weight;
-	};
-
-	componentDidMount() {
-		const {id, register, name} = this.props;
-		const {getReturnLocation, getReturnType} = this;
-		register({
-			id,
-			name,
-			getReturnLocation,
-			getReturnType,
-		});
-	}
 
 	render() {
 		const {
-			classes, x, y, name, returnValues, selected,
-			active, onClick, onContextMenuCapture
+			classes, x, y, name, returnValues, selected, register, id,
+			active, onClick, onContextMenuCapture, handleEndpointContext
 		} = this.props;
-		let prefix = '(E)';
 		return (
 			<NodeBase className={classes.root} x={x} y={y} onClick={onClick}
 					  onContextMenuCapture={onContextMenuCapture} selected={selected}>
-				<NodeHeader className={classes.header} prefix={prefix} name={name}/>
+				<NodeHeader className={classes.header} prefix='(E)' name={name} id={id}/>
 				<NodeBody>
-					<NodeReturns columnRef={this.right} executable={true}
+					<NodeReturns executable={true} x={x} register={register} handleEndpointContext={handleEndpointContext}
 								 parameters={returnValues} active={active}/>
 				</NodeBody>
 			</NodeBase>

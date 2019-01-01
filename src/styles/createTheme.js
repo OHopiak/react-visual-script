@@ -18,11 +18,13 @@ const createTheme = (theme = {}) => {
 	const types = {...defaultTypes, ...(theme.palette && theme.palette.types)};
 	const palette = {...theme.palette, types};
 	const connections = {...defaultConnections, ...theme.connections};
+	const nodeOffset = connections.circleRadius + connections.circleMargin + connections.weight;
 	return {
 		...theme,
 		palette,
 		shadows,
-		connections
+		connections,
+		nodeOffset,
 	};
 };
 

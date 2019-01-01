@@ -1,5 +1,5 @@
-import {normalize} from "../utils";
-import {VSEvent, VSFunction} from "../logic/functions";
+import {normalize} from "../../utils";
+import {VSEvent, VSFunction} from "../nodes";
 
 const mockFunctions = normalize([
 	new VSFunction({

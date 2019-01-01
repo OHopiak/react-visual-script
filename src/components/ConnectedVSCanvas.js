@@ -1,6 +1,7 @@
 import React from "react";
 import VSCanvas from "./VSCanvas";
-import {mockFunctions, mockNodeInfo} from "./mocks";
+import {mockFunctions, mockEvents, mockNodeInfo} from "../logic/mocks/mocks_helloworld";
+import VSOperation from "../logic/nodes/VSOperation";
 
 /*
 const withStore = connect(state => ({
@@ -12,9 +13,12 @@ const withStore = connect(state => ({
 }));
 */
 
+
 class ConnectedVSCanvas extends React.PureComponent {
 	state = {
 		functions: {...mockFunctions},
+		events: {...mockEvents},
+		operations: {...VSOperation.default},
 		nodeInfo: [...mockNodeInfo],
 		selected: -1,
 	};
